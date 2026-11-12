@@ -1,32 +1,34 @@
-#include <cstdlib>
 #include <iostream>
-#include <sstream>
-#include <string>
 
-int lerInteiro(const std::string& mensagem) {
+int lerInteiro(const char* mensagem) {
+    int numero;
     while (true) {
         std::cout << mensagem;
-        std::string linha;
-        if (!std::getline(std::cin, linha)) {
-            std::cout << "\nEntrada encerrada.\n";
-            std::exit(0);
+        if (std::cin >> numero) {
+            std::cin.ignore(10000, '\n');
+            return numero;
         }
-        std::istringstream entrada(linha);
-        int numero;
-        char extra;
-        if ((entrada >> numero) && !(entrada >> extra)) return numero;
+        if (std::cin.eof()) return 0;
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
         std::cout << "Digite um numero inteiro valido.\n";
     }
 }
 
 class ListaDupla {
     struct No {
-        std::string nome;
+        char nome[100];
         int idade;
         No* anterior;
         No* proximo;
-        No(const std::string& n, int i)
-            : nome(n), idade(i), anterior(nullptr), proximo(nullptr) {}
+        No(const char* n, int i) : idade(i), anterior(nullptr), proximo(nullptr) {
+            int j = 0;
+            while (n[j] != '\0' && j < 99) {
+                nome[j] = n[j];
+                ++j;
+            }
+            nome[j] = '\0';
+        }
     };
     No* inicio = nullptr;
     No* fim = nullptr;
@@ -44,7 +46,7 @@ public:
         }
     }
 
-    void inserirInicio(const std::string& nome, int idade) {
+    void inserirInicio(const char* nome, int idade) {
         No* novo = new No(nome, idade);
         novo->proximo = inicio;
         if (inicio) inicio->anterior = novo;
@@ -52,7 +54,7 @@ public:
         inicio = novo;
     }
 
-    void inserirFim(const std::string& nome, int idade) {
+    void inserirFim(const char* nome, int idade) {
         No* novo = new No(nome, idade);
         novo->anterior = fim;
         if (fim) fim->proximo = novo;
@@ -90,12 +92,21 @@ public:
     }
 };
 
-std::string lerNome() {
+void lerNome(char nome[100]) {
     while (true) {
         std::cout << "Nome do aluno: ";
-        std::string nome;
-        if (!std::getline(std::cin, nome)) std::exit(0);
-        if (nome.find_first_not_of(" \t") != std::string::npos) return nome;
+        std::cin.getline(nome, 100);
+        if (!std::cin) {
+            if (std::cin.eof()) { nome[0] = '\0'; return; }
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "Nome muito longo (maximo 99 caracteres).\n";
+            continue;
+        }
+        bool preenchido = false;
+        for (int i = 0; nome[i] != '\0'; ++i)
+            if (nome[i] != ' ' && nome[i] != '\t') preenchido = true;
+        if (preenchido) return;
         std::cout << "O nome nao pode ficar vazio.\n";
     }
 }
@@ -123,7 +134,9 @@ int main() {
         switch (opcao) {
             case 1:
             case 2: {
-                std::string nome = lerNome();
+                char nome[100];
+                lerNome(nome);
+                if (!std::cin && std::cin.eof()) return 0;
                 int idade = lerIdade();
                 if (opcao == 1) lista.inserirInicio(nome, idade);
                 else lista.inserirFim(nome, idade);
