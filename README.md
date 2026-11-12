@@ -1,6 +1,6 @@
 # Atividade - Listas Encadeadas em C++
 
-Implementacao de tres exercicios de Estrutura de Dados usando **ponteiros e alocacao dinamica**, sem `std::list` ou `std::vector` para representar as listas.
+Implementacao de tres exercicios de Estrutura de Dados usando **ponteiros e alocacao dinamica**. Os programas usam apenas `#include <iostream>` (sem `string`, `sstream`, `vector` ou bibliotecas de listas). O nome dos alunos e armazenado em `char nome[100]`.
 
 ## Exercicios
 
