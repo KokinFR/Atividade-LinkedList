@@ -1,20 +1,16 @@
-#include <cstdlib>
 #include <iostream>
-#include <sstream>
-#include <string>
 
-int lerInteiro(const std::string& mensagem) {
+int lerInteiro(const char* mensagem) {
+    int numero;
     while (true) {
         std::cout << mensagem;
-        std::string linha;
-        if (!std::getline(std::cin, linha)) {
-            std::cout << "\nEntrada encerrada.\n";
-            std::exit(0);
+        if (std::cin >> numero) {
+            std::cin.ignore(10000, '\n');
+            return numero;
         }
-        std::istringstream entrada(linha);
-        int numero;
-        char extra;
-        if ((entrada >> numero) && !(entrada >> extra)) return numero;
+        if (std::cin.eof()) return 0;
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
         std::cout << "Digite um numero inteiro valido.\n";
     }
 }
